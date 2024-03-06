@@ -14,7 +14,7 @@ class CreatePixelsTable extends Migration {
         Schema::create('pixels', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('store_id');
-            $table->foreign('store_id')->references('id')->on('store');
+            $table->foreign('store_id')->references('id')->on('stores');
             $table->text('platform');
             $table->text('code');
             $table->timestamps();
