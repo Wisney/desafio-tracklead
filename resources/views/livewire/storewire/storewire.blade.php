@@ -30,6 +30,15 @@
     </div>
     <div class="row justify-content-center">
         @if ($isIndexStorePage)
+            <div class="w-100">
+                <button class="float-end btn btn-success" wire:click="new()">Novo</button>
+            </div>
+        @else
+            <div class="w-100">
+                <a class="float-end btn btn-primary" href="/stores">Voltar</a>
+            </div>
+        @endif
+        @if ($isIndexStorePage)
             @include('livewire.storewire.listStores')
         @else
             @include('livewire.storewire.store')

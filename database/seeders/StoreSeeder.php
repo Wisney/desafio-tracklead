@@ -14,6 +14,6 @@ class StoreSeeder extends Seeder {
      * @return void
      */
     public function run() {
-        Store::factory()->count(rand(5, 10))->has(Pixel::factory()->count(rand(0, 4)))->create();
+        Store::factory()->count(10)->has(Pixel::factory()->count(3))->create();
     }
 }

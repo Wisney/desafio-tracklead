@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Pixel;
 use App\Models\Store;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -17,11 +18,13 @@ class Storewire extends Component {
         'description' => 'required'
     ];
     protected $listeners = [
-        'deleteStore' => 'destroy'
+        'deleteStore' => 'destroy',
+        'deletePixel' => 'destroyPixel',
+        'refreshParent' => '$refresh'
     ];
     public function render() {
         if ($this->isIndexStorePage) {
-            $this->stories = Store::select('id', 'name', 'location', 'description')->with('pixels')->get();
+            $this->stories = Store::select('id', 'name', 'location', 'description')->with('pixels')->orderBy('id', 'desc')->get();
         }
         return view('livewire.storewire.storewire');
     }
@@ -33,9 +36,34 @@ class Storewire extends Component {
         $this->store_id = '';
     }
     public function cancel() {
+        $store = Store::findOrFail($this->store_id);
+        $this->store_id = $store->id;
+        $this->name = $store->name;
+        $this->location = $store->location;
+        $this->description = $store->description;
+        $this->pixels = $store->pixels;
         $this->updateCategory = false;
         $this->isIndexStorePage = true;
         $this->resetFields();
+    }
+
+    public function new() {
+        $this->resetFields();
+        $this->updateStore = false;
+        $this->isIndexStorePage = false;
+    }
+
+    public function create() {
+        $this->validate();
+        try {
+            Store::create(['name' => $this->name, 'location' => $this->location, 'description' => $this->description]);
+            session()->flash('success', 'Store criada com sucesso!');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            session()->flash('error', 'Erro ao criar store.');
+        }
+        $this->resetFields();
+        $this->isIndexStorePage = true;
     }
 
     public function edit($id) {
@@ -73,11 +101,36 @@ class Storewire extends Component {
     }
     public function destroy($id) {
         try {
-            $store = Store::find($id)->delete();
+            Store::find($id)->delete();
             session()->flash('success', "Store deletada com sucesso!");
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             session()->flash('error', "Erro ao deletar store.");
+        }
+    }
+    public function cancelLastPixel() {
+        $store = Store::findOrFail($this->store_id);
+        $this->pixels = $store->pixels;
+    }
+    public function newPixel() {
+        if (!empty($this->store_id)) {
+            $store = Store::findOrFail($this->store_id);
+            $this->pixels = $store->pixels;
+            $this->pixels->push(Pixel::make(['store_id' => $this->store_id]));
+        }
+    }
+    public function destroyPixel($id) {
+        try {
+            Pixel::find($id)->delete();
+            $store = Store::findOrFail($this->store_id);
+            $this->pixels = $store->pixels;
+            $this->updateStore = true;
+            $this->isIndexStorePage = false;
+
+            session()->flash('success', "Pixel deletado com sucesso!");
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            session()->flash('error', "Erro ao deletar pixel.");
         }
     }
 }
