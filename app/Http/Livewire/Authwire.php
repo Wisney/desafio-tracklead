@@ -25,6 +25,7 @@ class Authwire extends Component {
         if (\Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
             //redirect
             session()->flash('message', 'Logado com sucesso!');
+            return redirect()->to('/stores');
         } else {
             session()->flash('error', 'Email ou senha inválidos');
         }
@@ -35,19 +36,18 @@ class Authwire extends Component {
             'email' => 'required|email|unique:users',
             'password' => 'required'
         ]);
-        $old_pass = $this->password;
-        $this->password = Hash::make($this->password);
+        $hashPass = Hash::make($this->password);
 
         try {
-            User::create(['name' => $this->name, 'email' => $this->email, 'password' => $this->password]);
+            $user = User::create(['name' => $this->name, 'email' => $this->email, 'password' => $hashPass]);
+            \Auth::login($user);
         } catch (\Exception $e) {
-            $this->password = $old_pass;
             session()->flash('error', 'Erro ao cadastrar!');
             return;
         }
 
-        //error or redirect
         session()->flash('message', 'Registrado com sucesso!');
+        return redirect()->to('/stores');
     }
     public function loginPage() {
         $this->registerForm = false;

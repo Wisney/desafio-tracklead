@@ -13,8 +13,7 @@ class DatabaseSeeder extends Seeder {
     public function run() {
         $this->call([
             UserSeeder::class,
-            StoreSeeder::class,
-            PixelSeeder::class
+            StoreSeeder::class
         ]);
     }
 }

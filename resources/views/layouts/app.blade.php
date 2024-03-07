@@ -11,10 +11,18 @@
 </head>
 
 <body>
-    <header class="col-12">
-        @if (Auth::check())
-            Você está logado, <button class="btn btn-danger text-white"> Deslogar</button>
-        @endif
+    <header>
+        <nav>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="float-end">
+                        @if (Auth::check())
+                            Você está logado, <a class="btn btn-danger text-white" href="/logout"> Deslogar</a>
+                        @endif
+                    </span>
+                </li>
+            </ul>
+        </nav>
     </header>
     <div class="container">
         @yield('content')

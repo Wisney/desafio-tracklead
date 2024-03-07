@@ -91,6 +91,7 @@
                         </div>
                     </div>
                 </form>
+                <small>Default pela seed: <br> admin@admin <br> admin</small>
             @endif
         </div>
     </div>
