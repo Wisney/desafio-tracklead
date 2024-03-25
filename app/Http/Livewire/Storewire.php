@@ -12,6 +12,7 @@ class Storewire extends Component {
     public $pixels;
     public $updateStore = false;
     public $isIndexStorePage = true;
+    public $isNewPixel = false;
     protected $rules = [
         'name' => 'required',
         'location' => 'required',
@@ -20,8 +21,17 @@ class Storewire extends Component {
     protected $listeners = [
         'deleteStore' => 'destroy',
         'deletePixel' => 'destroyPixel',
-        'refreshParent' => '$refresh'
+        'refreshStore' => 'refreshStore'
     ];
+    public function refreshStore() {
+        $this->isNewPixel = false;
+        if (!$this->isIndexStorePage && !empty($this->store_id)) {
+            $this->edit($this->store_id);
+        }
+        $this->mount();
+        $this->render();
+    }
+
     public function render() {
         if ($this->isIndexStorePage) {
             $this->stories = Store::select('id', 'name', 'location', 'description')->with('pixels')->orderBy('id', 'desc')->get();
@@ -109,15 +119,17 @@ class Storewire extends Component {
         }
     }
     public function cancelLastPixel() {
-        $store = Store::findOrFail($this->store_id);
-        $this->pixels = $store->pixels;
+        $this->isNewPixel = false;
+        //$store = Store::findOrFail($this->store_id);
+        //$this->pixels = $store->pixels;
     }
     public function newPixel() {
-        if (!empty($this->store_id)) {
+        $this->isNewPixel = true;
+        /* if (!empty($this->store_id)) {
             $store = Store::findOrFail($this->store_id);
             $this->pixels = $store->pixels;
             $this->pixels->push(Pixel::make(['store_id' => $this->store_id]));
-        }
+        } */
     }
     public function destroyPixel($id) {
         try {
@@ -132,5 +144,8 @@ class Storewire extends Component {
             Log::error($e->getMessage());
             session()->flash('error', "Erro ao deletar pixel.");
         }
+    }
+
+    public function searchShopify() {
     }
 }

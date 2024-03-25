@@ -4,6 +4,8 @@ Laravel + mysql + livewire + Alpine.js
 
 Para executar:
 
+preencher .env com acesso ao mysql
+
 1. composer install
 2. php artisan migrate
 3. php artisan db:seed

@@ -40,24 +40,28 @@
         </div>
     </div>
     <div class="row">
-        @if (!empty($pixels))
-            @foreach ($pixels as $pixel)
-                <div class="col-12 col-md-4 border">
-                    <livewire:pixelwire :wire:key="$pixel->id" :wire:store_id="$store_id" :pixel="$pixel">
-                    </livewire:pixelwire>
-                    @if (!empty($pixel->id))
+        @if ($isNewPixel)
+            <div class="col-12 col-md-4 offset-md-4 mb-2 border">
+                <livewire:pixelwire :store_id="$store_id" :isNewPixel="$isNewPixel"></livewire:pixelwire>
+                <button wire:click.prevent="cancelLastPixel()" class="btn btn-danger w-100">
+                    Cancelar
+                </button>
+            </div>
+        @else
+            @if (!empty($pixels))
+                @foreach ($pixels as $pixel)
+                    <div class="col-12 col-md-4 mb-2 border">
+                        <livewire:pixelwire :wire:key="$pixel->id" :store_id="$store_id" :platform="$pixel->platform" :code="$pixel->code"
+                            :pixel_id="$pixel->id">
+                        </livewire:pixelwire>
                         <button
                             x-on:click="confirm('Tem certeza que deseja deletar o pixel?') ? window.livewire.emit('deletePixel', {{ $pixel->id }}) : false"
                             class="btn btn-danger w-100">
                             Deletar Pixel
                         </button>
-                    @else
-                        <button wire:click.prevent="cancelLastPixel()" class="btn btn-danger w-100">
-                            Cancelar
-                        </button>
-                    @endif
-                </div>
-            @endforeach
+                    </div>
+                @endforeach
+            @endif
         @endif
     </div>
 @else
